@@ -10,7 +10,7 @@ class BooksApp extends React.Component {
   componentDidMount() {
     BooksAPI.getAll().then((books) => {
       books.map(book => {
-        book.shelfValue = "none";
+        book.shelfValue = book.shelf;
         return book;
       });
       this.setState((curState) => ({
