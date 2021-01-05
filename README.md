@@ -10,7 +10,7 @@ HomePage =>
     Contains list of books by shelfs. Takes shelf types,books and a callback for updating book's shelf property as props.
     Also home page contains a link for routing search page.
 SearchPage => 
-    List books after search. Takes changeShelftValue as callback for updating home page's books shelf values,shelfTypes as array,checkBookExistOnShelf as callback for checking books shelf property (i didnt see book obj has property named shelf. I was added manually first. This function can be removed now.) as props.
+    List books after search. Takes changeShelftValue as callback for updating home page's books shelf values,shelfTypes as array,checkBookExistOnShelf as callback for checking books shelf property (i didnt see book obj has property named shelf. I was added manually first. This function can be removed now.) as props. When a books shelf type changes app.js's update method triggers and updates book on server.
 Components
     ShelfComponent => 
         Takes shelfHeader,books,shelfList,changeShelftValue as props. Displays every shelf by array.map.
