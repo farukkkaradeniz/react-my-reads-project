@@ -8,9 +8,12 @@ import * as BooksAPI from './main/utils/BooksAPI';
 
 class BooksApp extends React.Component {
   componentDidMount() {
+    this.getBooks();
+  }
+
+  getBooks = () => {
     BooksAPI.getAll().then((books) => {
       books.map(book => {
-        book.shelfValue = book.shelf;
         return book;
       });
       this.setState((curState) => ({
@@ -24,26 +27,20 @@ class BooksApp extends React.Component {
     const booksFiltered = this.state.books.filter(book => book.id === bookId);
     if(booksFiltered.length > 0) {
       const book = booksFiltered[0];
-      book.shelfValue = shelfVal;
-      this.setState((curState) => ({
-        ...curState,
-        books : [
-          ...curState.books,
-          book
-        ]
-      }));
+      this.updateBookOnServer(book,shelfVal);
     } else {
       BooksAPI.get(bookId).then((book) => {
-        book.shelfValue = shelfVal;
-        this.setState((curState) => ({
-          ...curState,
-          books : [
-            ...curState.books,
-            book
-          ]
-        }));
+        book.shelf = shelfVal;
+        this.updateBookOnServer(book,shelfVal);
       });
     }
+  }
+
+  updateBookOnServer = (book,shelf) => {
+    book.shelf = shelf;
+    BooksAPI.update(book,shelf).then(response => {
+      this.getBooks();
+    }); 
   }
 
   state = {

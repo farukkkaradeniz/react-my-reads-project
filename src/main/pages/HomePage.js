@@ -17,7 +17,7 @@ class HomePage extends Component {
             {
               this.props.shelfTypes.filter(shelfType => shelfType.display).map(shelfType => (
                 <ShelfComponent shelfHeader={shelfType.name} 
-                    books={this.props.books.filter(book => book.shelfValue === shelfType.value)} 
+                    books={this.props.books.filter(book => book.shelf === shelfType.value)} 
                     key={shelfType.value}
                     shelfList={this.props.shelfTypes}
                     changeShelftValue={this.props.changeShelftValue}/>

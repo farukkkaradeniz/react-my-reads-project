@@ -10,36 +10,61 @@ import BookListComponent from '../components/BookListComponent';
 class SearchPage extends Component {
   state = {
     books : [],
-    searchQuery : ''
+    searchQuery : '',
+    errorMessage : 'For listing books type into search input !!!'
   };
 
   onChangeInputVal = value => {
     this.setState((curState) => ({
       searchQuery : value,
+      errorMessage : '',
       books : []
     }));
     if(value.trim() !== '') {
       BooksAPI.search(value,100).then((books) => {
-        books.map(book => {
-          book.shelfValue = this.props.checkBookExistOnShelf(book.id);
-          return book;
-        });
-        this.setState((curState) => ({
-          ...curState,
-          books : books
-        }));
+        if (Array.isArray(books)) {
+          this.setState((curState) => ({
+            ...curState,
+            books : books
+          }));
+        } else {
+          this.setState((curState) => ({
+            ...curState,
+            books : [],
+            errorMessage: 'Error ! received message from backend : ' + books.error
+          }));
+        }
       });
+    } else {
+      this.setState((curState) => ({
+        ...curState,
+        errorMessage : 'For listing books type into search input !!!'
+      }));
     }
   }
 
   onChangeShelfVal = (shelfVal,bookId) => {
     const book = this.state.books.filter(book => book.id === bookId)[0];
-    book.shelfValue = shelfVal;
-    this.setState((curState) => ({
-      ...curState,
-      books : [...curState.books,book]
-    }));
-    this.props.changeShelftValue(shelfVal,bookId);
+    var index = this.state.books.findIndex(book => book.id === bookId);
+    if (index !== -1) {
+      book.shelf = shelfVal;
+      this.setState((curState) => ({
+        ...curState,
+        books : [...curState.books.slice(0,index),
+          Object.assign({}, this.state.books[index], book),
+          ...this.state.books.slice(index+1)
+        ]
+      }));
+      this.props.changeShelftValue(shelfVal,bookId);
+    }
+  }
+
+  showErrorMessage = () => {
+    if (this.state.errorMessage === '') {
+      return <BookListComponent books={this.state.books} shelfList={this.props.shelfTypes} changeShelftValue={this.onChangeShelfVal}/>;
+    } else {
+      return <span style={{marginTop:'200px'}}> {this.state.errorMessage} </span>
+    }
   }
 
   render() {
@@ -61,7 +86,9 @@ class SearchPage extends Component {
           </div>
         </div>
         <div className="search-books-results">
-          <BookListComponent books={this.state.books} shelfList={this.props.shelfTypes} changeShelftValue={this.onChangeShelfVal}/>
+          {
+            this.showErrorMessage()
+          }
         </div>
       </div>
     
